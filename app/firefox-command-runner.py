@@ -13,8 +13,7 @@ def getMessage():
     if len(rawLength) == 0:
         sys.exit(0)
     messageLength = struct.unpack('@I', rawLength)[0]
-    message = sys.stdin.read(messageLength).decode('string_escape').strip("'\"")
-    return message
+    return sys.stdin.read(messageLength).decode('string_escape').strip("'\"")
 
 
 # Encode a message for transmission,
@@ -58,20 +57,20 @@ while True:
             config_path = os.path.join(os.pardir, 'config')
             if os.path.isfile(config_path):
                 command_vec += ['--config-location', config_path]
-            
+
             if use_cookies:
                 my_jar = makeCookieJar(receivedMessage['cookies'])
                 subprocess.check_output(command_vec + ['--cookies', my_jar, url])
             else:
                 subprocess.check_output(command_vec + [url])
 
-            sendMessage(encodeMessage('Finished Downloading to /data/down: ' + url))
+            sendMessage(encodeMessage(f'Finished Downloading to /data/down: {url}'))
         except Exception as err:
-            sendMessage(encodeMessage('Some Error Downloading: ' + url + ': ' + str(err)))
+            sendMessage(encodeMessage(f'Some Error Downloading: {url}: {str(err)}'))
         finally:
             # be sure to remove the cookie storage even in case of exception
             if use_cookies and my_jar:
                 os.unlink(my_jar)
     except Exception as err:
-        sendMessage(encodeMessage('JSON error: ' + str(err)))
+        sendMessage(encodeMessage(f'JSON error: {str(err)}'))
 
